@@ -1,2 +1,49 @@
-# ---
-Автоматично Осветление
+# Автоматично осветление с Arduino
+
+## Описание
+Този проект реализира автоматично включване на светодиод (LED), когато датчик за движение (PIR) засече движение. LED лампата остава включена за определен период след последното засечено движение и след това автоматично се изключва.
+
+## Компоненти
+- Arduino (напр. Arduino Uno)
+- PIR датчик за движение
+- LED лампа
+- Резистор (за LED,  1kΩ)
+- Жици и дъска за прототипиране (breadboard)
+
+## Схема на свързване
+- PIR датчик:
+  - VCC → 5V на Arduino
+  - GND → GND на Arduino
+  - OUT → pin 2 на Arduino
+- LED:
+  - Дългият крак (+) → pin 8 на Arduino през резистор
+  - Късият крак (-) → GND на Arduino
+
+## Код
+```cpp
+int pirPin = 2;
+int lampPin = 8;
+
+unsigned long lastMotionTime = 0;     
+const unsigned long holdTime = 5000;  
+
+void setup() {
+  pinMode(pirPin, INPUT);
+  pinMode(lampPin, OUTPUT);
+  digitalWrite(lampPin, LOW);
+  Serial.begin(9600);
+}
+
+void loop() {
+  int motion = digitalRead(pirPin);
+
+  if (motion == HIGH) {
+    digitalWrite(lampPin, HIGH);
+    lastMotionTime = millis();
+    Serial.println("Движение!");
+  }
+
+  if (millis() - lastMotionTime >= holdTime) {
+    digitalWrite(lampPin, LOW);
+  }
+}
